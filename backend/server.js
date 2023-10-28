@@ -1,12 +1,14 @@
 require('dotenv').config()
 const express = require('express')
 
-// Express app
-const app = express()
-const workoutRoutes = require('./routes/workouts.js')
+const workoutRoutes = require('./routes/workout')
 const { default: mongoose } = require('mongoose')
 
+// Express app
+const app = express()
+
 // middleware
+app.use(express.json())
 app.use((req, res, next) => {
     console.log(req.path, req.method)
     next()
@@ -16,16 +18,16 @@ app.use((req, res, next) => {
 app.use('/api/workouts',workoutRoutes)
 
 // connect to db
-mongoose.connect(process.env.MONGO_UI)
-.then(()=>{
+mongoose.connect(process.env.MONGO_URI)
+    .then(()=>{
+         // Listen for requests
+        app.listen(process.env.PORT, ()=>{
+            console.log('Connected to DB \nListening on 4000!!')
+        })
+    })
+    .catch((error) => console.log(error))
 
-})
-.catch((error) => console.log(error))
 
 
-// Listen for requests
-app.listen(process.env.PORT, ()=>{
-    console.log('listening on 4000!!')
-})
 
 process.env
